@@ -1,0 +1,9 @@
+﻿@model SirSoiProject.Models.Student
+
+<h1>Are you sure you want to remove Student-<strong>@Model.StudentID</strong> (<strong>@Model.FirstName</strong>)?</h1>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="StudentID" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" asp-controller="Students" class="btn btn-secondary">Cancel</a>
+</form>
