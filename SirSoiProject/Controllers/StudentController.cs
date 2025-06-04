@@ -1,13 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SirSoiProject.Models;
+using System.Threading.Tasks;
+
 
 namespace SirSoiProject.Controllers
 {
     public class StudentController : Controller
     {
-        private static List<Student> students = new List<Student>();
-        public IActionResult Index()
+        private readonly StudentDB _studentDB;
+
+
+        public StudentController(StudentDB studentDB)
         {
+            _studentDB = studentDB;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var students = await _studentDB.Student.ToListAsync();
             return View(students);
         }
 
@@ -17,73 +28,16 @@ namespace SirSoiProject.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Student student)
+        public async Task<IActionResult> Create(Student student)
         {
             if (ModelState.IsValid)
             {
-                student.StudentID = students.Count + 1;
-                students.Add(student);
+                int id = _studentDB.Student.Count() + 1;
+                student.StudentID = id;
+                await _studentDB.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View(student);
-        }
-
-        public IActionResult Edit(int id)
-        {
-            var student = students.FirstOrDefault(s => s.StudentID == id);
-            if (student == null)
-            {
-                return NotFound();
-            }
-            return View(student);
-        }
-
-        [HttpPost]
-        public IActionResult Edit(int id, Student student)
-        {
-            if (id != student.StudentID)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                var studentexisting = students.FirstOrDefault(s => s.StudentID == id);
-                if (studentexisting == null)
-                {
-                    return NotFound();
-                }
-
-                studentexisting.FirstName = student.FirstName;
-                studentexisting.MiddleName = student.MiddleName;
-                studentexisting.LastName = student.LastName;
-                studentexisting.YearLevel = student.YearLevel;
-                studentexisting.Gender = student.Gender;
-
-                return RedirectToAction("Index");
-            }
-            return View(student);
-        }
-
-        public IActionResult Delete(int id)
-        {
-            var student = students.FirstOrDefault(s => s.StudentID == id);
-            if (student == null)
-            {
-                return NotFound();
-            }
-            return View(student);
-        }
-
-        [HttpPost, ActionName ("Delete")]
-        public IActionResult DeleteConfirmed(int id)
-        {
-            var student = students.FirstOrDefault(s => s.StudentID == id);
-            if (student != null)
-            {
-                students.Remove(student);
-            }
-            return RedirectToAction("Index");
         }
     }
 }
