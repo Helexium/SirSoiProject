@@ -80,5 +80,26 @@ namespace SirSoiProject.Controllers
             }
             return View(student);
         }
+        public IActionResult Delete(int id)
+        {
+            var student = _studentDB.Students.FirstOrDefault(s => s.StudentID == id);
+            if (student == null)
+            {
+                return NotFound();
+            }
+            return View(student);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var student = _studentDB.Students.FirstOrDefault(s => s.StudentID == id);
+            if (student != null)
+            {
+                _studentDB.Students.Remove(student);
+            }
+            await _studentDB.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
     }
 }
