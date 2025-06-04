@@ -18,7 +18,7 @@ namespace SirSoiProject.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var students = await _studentDB.Student.ToListAsync();
+            var students = await _studentDB.Students.ToListAsync();
             return View(students);
         }
 
@@ -30,14 +30,11 @@ namespace SirSoiProject.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Student student)
         {
-            if (ModelState.IsValid)
-            {
-                int id = _studentDB.Student.Count() + 1;
+
+                int id = _studentDB.Students.Count() + 1;
                 student.StudentID = id;
                 await _studentDB.SaveChangesAsync();
                 return RedirectToAction("Index");
-            }
-            return View(student);
         }
     }
 }
