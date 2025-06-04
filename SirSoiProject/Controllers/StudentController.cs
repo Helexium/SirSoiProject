@@ -42,5 +42,43 @@ namespace SirSoiProject.Controllers
             }
             return View(student);
         }
+        public IActionResult Edit(int id)
+        {
+            var student = _studentDB.Students.FirstOrDefault(s => s.StudentID == id);
+            if (student == null)
+            {
+                return NotFound();
+            }
+            return View(student);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, Student student)
+        {
+            if (id != student.StudentID)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var studentexisting = _studentDB.Students.FirstOrDefault(s => s.StudentID == id);
+                if (studentexisting == null)
+                {
+                    return NotFound();
+                }
+
+                studentexisting.FirstName = student.FirstName;
+                studentexisting.MiddleName = student.MiddleName;
+                studentexisting.LastName = student.LastName;
+                studentexisting.YearLevel = student.YearLevel;
+                studentexisting.Gender = student.Gender;
+
+                await _studentDB.SaveChangesAsync();
+
+                return RedirectToAction("Index");
+            }
+            return View(student);
+        }
     }
 }
